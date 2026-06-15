@@ -1,0 +1,30 @@
+# NexaSecure AI — development orchestration.
+# Runs the edge backend + frontend together for local development.
+# (Cloud services are intentionally separate and not started here.)
+
+services:
+  backend:
+    build:
+      context: ./edge/backend
+      dockerfile: ../../infra/docker/backend.Dockerfile
+    container_name: nexa-backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./edge/backend:/app
+    # Read-only camera/serial devices would be mapped here on a real edge device.
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infra/docker/frontend.Dockerfile
+    container_name: nexa-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend

@@ -1,0 +1,17 @@
+# Optional computer-vision extras for the REAL driver-facing camera source.
+#
+# NOT installed by default: these are heavy and only needed when you set
+# NEXA_DRIVER_CAM_SOURCE=webcam on a machine with a camera.
+#
+# IMPORTANT: as of this writing, `mediapipe` has no wheels for Python 3.14. Use a
+# supported interpreter (Python 3.10-3.12) for the webcam source:
+#
+#   python3.12 -m venv .venv-cv
+#   source .venv-cv/Scripts/activate   # (Windows bash)
+#   pip install -r requirements.txt -r requirements-cv.txt
+#
+# The mock source (the default) needs none of this and runs on any Python.
+
+opencv-python>=4.9,<5.0
+mediapipe>=0.10,<0.11
+numpy>=1.26,<2.0

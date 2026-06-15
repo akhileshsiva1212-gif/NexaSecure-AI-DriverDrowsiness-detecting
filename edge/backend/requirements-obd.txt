@@ -1,0 +1,23 @@
+# Optional extras for the REAL OBD-II serial driver (read-only ELM327).
+#
+# NOT installed by default — only needed when you set NEXA_OBD_SOURCE=serial on a machine
+# with an ELM327 adapter (USB/serial). The mock source (the default) needs none of this.
+#
+#   source .venv/Scripts/activate   # (Windows bash)
+#   pip install -r requirements-obd.txt
+#
+# Then point the backend at an adapter (or the emulator below):
+#   NEXA_OBD_SOURCE=serial
+#   NEXA_OBD_SERIAL_PORT=auto        # or COM3 / /dev/ttyUSB0 / the emulator's pseudo-tty
+#
+# Safety/security: OBD access is strictly READ-ONLY. python-OBD only issues mode-01 reads
+# and the ATRV voltage query here — it never writes to the vehicle CAN bus.
+
+obd>=0.7,<0.8            # python-OBD: read-only ELM327 client (pulls in pyserial)
+
+# ---- dev / test only ----
+# Software ELM327 for exercising the `serial` path with no vehicle. Easiest cross-platform use
+# (incl. native Windows, no com0com) is its TCP mode + pyserial's socket:// URL — see
+# edge/sensors/obd/README.md. NOTE: its setup.py needs pkg_resources, so on a fresh venv install
+# setuptools first if the build fails:  pip install "setuptools<81"
+ELM327-emulator>=3.0

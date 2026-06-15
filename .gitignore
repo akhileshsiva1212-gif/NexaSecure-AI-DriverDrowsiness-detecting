@@ -1,0 +1,32 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Node / frontend ----
+node_modules/
+dist/
+.vite/
+*.local
+
+# ---- Data, models, secrets (NEVER commit) ----
+datasets/**
+!datasets/README.md
+edge/ai/models/**/*.pt
+edge/ai/models/**/*.onnx
+edge/ai/models/**/*.engine
+*.sqlite
+*.sqlite3
+*.db
+
+# ---- Logs / misc ----
+*.log
+.DS_Store
+.idea/
+.vscode/
