@@ -2,6 +2,8 @@
   "name": "nexasecure-frontend",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
+  "author": "Akhilesh",
   "type": "module",
   "scripts": {
     "dev": "vite",

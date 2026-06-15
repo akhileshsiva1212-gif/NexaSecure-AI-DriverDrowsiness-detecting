@@ -29,20 +29,25 @@ sensor source ─▶ feature module ─▶ decision engine ─▶ event bus ─�
 
 ```
 edge/
-  ai/         AI/CV models, pipelines (driver|road|fusion), inference, registry
   backend/    FastAPI app: api/v1, core, features/*, decision_engine, realtime, db, events
-  sensors/    hardware interfaces: camera, obd, imu_gps
-  security/   cyberattack protection layer (IDS, integrity checks)
-frontend/     responsive PWA (React + TS + Vite + Tailwind)
+  sensors/    hardware interfaces: camera, obd (real read-only ELM327 driver)
+  ai/         placeholder — all AI/CV now runs in-browser (see frontend/src/lib/detection)
+  security/   placeholder — the security/IDS feature was removed (replaced by "My Mood")
+frontend/     responsive PWA (React + TS + Vite + Tailwind) + all in-browser detection
 cloud/        opt-in services (separate so the car never depends on them)
 shared/       schemas/contracts shared across services (single source of truth)
 infra/        docker, ci, monitoring
 docs/         architecture + ADRs
 ```
 
-## Build order
+Detection is **in-browser** (`frontend/src/lib/detection/`): a Source→Detector→Sink pipeline
+over MediaPipe (face landmarks, COCO object detection), OpenCV.js (lane lines) and opt-in
+TF.js (multi-class GTSRB signs). The backend monitors idle until real detections POST to the
+`/driver/ingest` and `/road/*` ingest endpoints.
 
-Phase 0 skeleton → **Phase 1: Vehicle Health (current)** → driver monitoring → road
-perception → fusion (accident prediction, SOS) → security/privacy hardening → polish/deploy.
+## Build order (history)
 
-See the approved plan for the full feature dependency map and development order.
+Phase 0 skeleton → Vehicle Health (real OBD) → driver monitoring → road perception → fusion
+(accident prediction, SOS) → **all mock/scripted sources removed (real detection only)**.
+**All planned features now have a backend + UI.** Remaining work is platform hardening
+(HTTPS/TLS, real auth, GPS) and polish — see `RESUME.md` for the current backlog.

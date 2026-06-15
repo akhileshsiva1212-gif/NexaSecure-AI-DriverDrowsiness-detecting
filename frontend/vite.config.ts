@@ -13,4 +13,13 @@ export default defineConfig({
       '/api': { target: 'http://localhost:8000', changeOrigin: true, ws: true },
     },
   },
+  // Light IP hardening of the shipped bundle (see LICENSE). Note: client code can
+  // never be made truly secret — this only raises the cost of copying.
+  build: {
+    sourcemap: false, // never ship source maps to the browser
+    minify: 'esbuild', // minify + strip comments (Vite default, made explicit)
+  },
+  esbuild: {
+    legalComments: 'none', // drop license/banner comments from the production bundle
+  },
 })

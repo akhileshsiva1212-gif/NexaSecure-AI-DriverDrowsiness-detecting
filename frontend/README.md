@@ -9,8 +9,9 @@ npm install
 npm run dev      # http://localhost:5173 (also exposed on the LAN for phone testing)
 ```
 
-The dev server proxies `/api` and `/ws` to the edge backend on `localhost:8000`, so start
-the backend first (see `../edge/backend`).
+The dev server proxies `/api` to the edge backend on `localhost:8000` (with `ws: true`, so it
+also carries the realtime WebSocket at `/api/v1/ws`). Start the backend first (see
+`../edge/backend`).
 
 ## Build
 
@@ -23,10 +24,18 @@ npm run preview  # serve the production build locally
 
 ```
 src/
-  app/        App shell
-  features/   one folder per feature UI (live-dashboard, vehicle-health, ...)
-  components/ shared UI components
-  lib/        api client, websocket client, shared types
-  store/      client state (added as needed)
-  styles/     global CSS / Tailwind entry
+  app/            App shell
+  features/       one folder per feature UI (driver, vehicle-health, mood, detection-lab, ...)
+  components/     shared UI components
+  lib/
+    detection/    in-browser Source→Detector→Sink pipeline (MediaPipe / OpenCV.js / TF.js)
+    api.ts        REST client
+    ws.ts         realtime WebSocket client (connects to /api/v1/ws)
+    types.ts      shared types
+  styles/         global CSS / Tailwind entry
 ```
+
+All detection runs in the browser — raw camera frames never leave the device; only computed
+numbers are POSTed to the backend. The **Detection Lab** (`#/lab`) runs a real detector over an
+uploaded image folder/zip and reports accuracy / precision-recall / a confusion matrix when
+images are labeled by subfolder (GTSRB/Kaggle layout).

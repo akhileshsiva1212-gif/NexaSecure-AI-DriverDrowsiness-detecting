@@ -5,7 +5,7 @@ backend package so it's importable by the app:
 
 > `edge/backend/app/features/vehicle_health/serial_source.py` — `SerialObdSource`
 
-It implements the same `ObdSource` interface as the mock
+It implements the `ObdSource` interface
 (`edge/backend/app/features/vehicle_health/obd_source.py`) and is selected by setting
 `NEXA_OBD_SOURCE=serial` (or via `POST /api/v1/vehicle/connection {"mode":"serial"}` /
 the dashboard's **Connect Real OBD** button). No feature code changes when hardware is added.
@@ -85,6 +85,7 @@ speed/coolant-temp/voltage and `null` oil-pressure/coolant-level.
 The automated unit tests (`tests/test_obd_serial.py`) cover the PID→reading mapping on any OS by
 injecting a fake connection — no emulator or hardware required.
 
-Until a real adapter or the emulator is connected, development uses the built-in
-`MockObdSource`, which simulates a vehicle (including periodic engine overheating) so the full
-pipeline runs with no hardware.
+With no adapter (and `NEXA_OBD_SOURCE=none`, the default) the vehicle monitor stays
+**disconnected** and reports nothing — engine data is never fabricated. There is no mock/demo
+OBD source: Vehicle Health and Predictive Maintenance become live only when a real ELM327 (or
+the emulator above) is connected.

@@ -18,25 +18,33 @@ A three-tier system:
 3. **Cloud (opt-in only)** — software/model updates, fleet management, SOS relay, anonymized
    analytics. Never required for safety features.
 
-## Planned features
+## Features
 
-Driver Drowsiness · Driver Distraction · Lane Detection · Forward Collision Warning ·
-Accident Prediction · Vehicle Health · Predictive Maintenance · Road Hazard Detection ·
-Traffic Sign Recognition · Emergency SOS · Privacy-First Local AI · Cyberattack Protection.
+Driver Drowsiness · Driver Distraction · Traffic Sign Recognition · Vehicle Health (real OBD-II) ·
+Predictive Maintenance · Road Hazard Detection · Lane Keeping · Forward Collision Warning ·
+Accident Prediction (sensor fusion) · Emergency SOS · My Mood (drowsiness wake-up alert).
+
+All detection runs **in-browser** — live camera, image/video upload, or batch evaluation in the
+**Detection Lab**. There is no scripted/mock data: each card stays idle until a real detection
+arrives. Privacy-first by construction — raw video never leaves the browser; only numbers are
+sent to the backend.
 
 ## Current status
 
-**Phase 0 (skeleton) + Phase 1 (first feature) in progress.**
-The first end-to-end feature is **Vehicle Health Monitoring**, driven by a *simulated*
-OBD-II source so the whole pipeline runs with no hardware.
+**All planned features have a backend + dashboard UI.** Detection is real and in-browser
+(MediaPipe FaceLandmarker / COCO ObjectDetector, OpenCV.js lane detection, opt-in TF.js GTSRB
+signs); Vehicle Health reads a real **read-only** ELM327 over serial when an adapter is
+connected, and Predictive Maintenance trends that live feed. No mock/scripted sources remain.
+Backend suite: **71 tests passing**; frontend `npm run build` passes. See
+[`RESUME.md`](RESUME.md) for the detailed state and pickup guide.
 
 ## Repository layout
 
 See [`docs/architecture/overview.md`](docs/architecture/overview.md) for the full map.
 
 ```
-edge/        # everything that runs in the vehicle (AI, backend, sensors, security)
-frontend/    # responsive PWA dashboard (laptop + phone)
+edge/        # in-vehicle backend (FastAPI) + sensor drivers (camera, OBD)
+frontend/    # responsive PWA dashboard + all in-browser detection (laptop + phone)
 cloud/       # opt-in cloud services (kept separate to enforce privacy-first)
 shared/      # schemas/contracts shared across services
 docs/        # architecture + decision records (ADRs)
@@ -66,4 +74,8 @@ npm run dev
 
 ## License
 
-TBD.
+**Proprietary — Copyright (c) 2026 Akhilesh. All rights reserved.**
+
+This is proprietary and confidential software. No permission is granted to use, copy, modify,
+distribute, or create derivative works without the prior written permission of the owner. See
+the [`LICENSE`](LICENSE) file for the full terms. For licensing inquiries, contact the owner.
