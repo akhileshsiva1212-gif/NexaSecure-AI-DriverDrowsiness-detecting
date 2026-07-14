@@ -1,46 +1,70 @@
+<div align="center">
+
 # NexaSecure AI
 
-An **edge-first, privacy-first, advisory-only** AI driver-assistance platform.
+**Edge-first · Privacy-first · Advisory-only driver-assistance platform**
 
-> ⚠️ **Safety boundary:** NexaSecure AI *assists* the driver with alerts and information.
-> It **never controls the vehicle** and only reads vehicle data (never writes to the CAN bus).
-> Safety features must be validated on recorded/simulated data in controlled conditions —
-> never on demos alone, never first in a moving vehicle.
+*Real-time driver and road monitoring that runs entirely on-device — no cloud dependency, no raw video ever leaves the browser, and the vehicle stays in the driver's hands.*
 
-## What this is
+</div>
 
-A three-tier system:
+---
 
-1. **Edge device (in the vehicle)** — captures camera + sensor data, runs all AI locally,
-   makes advisory decisions. Raw video never leaves the car.
-2. **Local backend (same device)** — FastAPI service exposing APIs + a real-time WebSocket
-   feed, storing events, serving the dashboard.
-3. **Cloud (opt-in only)** — software/model updates, fleet management, SOS relay, anonymized
-   analytics. Never required for safety features.
+## Safety boundary
 
-## Features
+> NexaSecure AI **assists** the driver with alerts and information. It **never controls the vehicle** and only *reads* vehicle data — it never writes to the CAN bus. Safety-critical features must be validated on recorded or simulated data under controlled conditions first. Never on demos alone. Never first in a moving vehicle.
 
-Driver Drowsiness · Driver Distraction · Traffic Sign Recognition · Vehicle Health (real OBD-II) ·
-Predictive Maintenance · Road Hazard Detection · Lane Keeping · Forward Collision Warning ·
-Accident Prediction (sensor fusion) · Emergency SOS · My Mood (drowsiness wake-up alert).
+---
 
-All detection runs **in-browser** — live camera, image/video upload, or batch evaluation in the
-**Detection Lab**. There is no scripted/mock data: each card stays idle until a real detection
-arrives. Privacy-first by construction — raw video never leaves the browser; only numbers are
-sent to the backend.
+## Why NexaSecure AI
 
-## Current status
+Most driver-assistance demos either fake their data or ship your camera feed to a server. NexaSecure AI does neither:
 
-**All planned features have a backend + dashboard UI.** Detection is real and in-browser
-(MediaPipe FaceLandmarker / COCO ObjectDetector, OpenCV.js lane detection, opt-in TF.js GTSRB
-signs); Vehicle Health reads a real **read-only** ELM327 over serial when an adapter is
-connected, and Predictive Maintenance trends that live feed. No mock/scripted sources remain.
-Backend suite: **71 tests passing**; frontend `npm run build` passes. See
-[`RESUME.md`](RESUME.md) for the detailed state and pickup guide.
+- **Edge-first** — every AI model runs locally, in the browser or on the vehicle's edge computer. Nothing depends on the cloud to function.
+- **Privacy-first** — raw camera and audio frames never leave the device. Only small, structured numbers (an eye-aspect ratio, a bounding box, a detected sign) are ever sent to the backend.
+- **Advisory-only** — the system alerts and informs. It never steers, brakes, or accelerates, and every vehicle-data path is strictly read-only.
+- **Honest by design** — there is no mock, scripted, or demo data anywhere in the pipeline. If no camera is live or no OBD-II adapter is connected, the dashboard says so instead of inventing numbers.
+
+## How it's built
+
+A three-tier system, each tier doing exactly one job:
+
+| Tier | Responsibility |
+|---|---|
+| **Edge device** (in the vehicle) | Captures camera and sensor data, runs all AI locally, makes advisory decisions. Raw video never leaves the car. |
+| **Local backend** (same device) | A FastAPI service exposing REST APIs and a real-time WebSocket feed, storing event history, serving the dashboard. |
+| **Cloud** (strictly opt-in) | Software/model updates, fleet management, SOS relay, anonymized analytics. Never required for any safety feature. |
+
+All computer-vision inference — face landmarks, object detection, lane finding, sign recognition — runs **in the browser** via MediaPipe, TensorFlow.js, and OpenCV.js. The backend only ever receives the numeric output of a detection, never the frame itself.
+
+## Safety features
+
+| Feature | What it does |
+|---|---|
+| **Driver Drowsiness** | Eye/mouth geometry (EAR/MAR) from live face tracking → PERCLOS, microsleep, and yawn detection. |
+| **Driver Distraction** | Head pose and gaze direction to flag "eyes off the road." |
+| **Traffic Sign Recognition** | In-browser STOP detection, with an optional multi-class classifier for other signs. |
+| **Vehicle Health** | Real, read-only OBD-II telemetry (ELM327). Non-standard readings are reported empty, never faked. |
+| **Predictive Maintenance** | Trend analysis over live telemetry to forecast time-to-threshold. |
+| **Road Hazard Detection** | In-browser object detection for proximity and in-path obstacles. |
+| **Lane Keeping** | Classic CV (Canny + Hough) lane-line detection via OpenCV.js. |
+| **Forward Collision Warning** | Distance and time-to-collision estimation from detected objects. |
+| **Accident Prediction** | Sensor fusion across every monitor into a single 0–100 crash-risk score. |
+| **Emergency SOS** | Auto-arming state machine with a cancelable countdown; dispatch is advisory-only. |
+| **My Mood** | A Web-Audio drowsiness wake-up alarm with custom, browser-stored sounds. |
+
+Every feature supports three input modes — **live camera**, **file upload**, and batch evaluation in the **Detection Lab** — and every card stays idle until a real detection arrives.
+
+## Technology stack
+
+**Frontend** — React 18 · TypeScript 5 · Vite 5 · Tailwind CSS 3 · Progressive Web App
+**Edge AI** — MediaPipe Tasks Vision (WASM) · TensorFlow.js · OpenCV.js
+**Backend** — FastAPI · Uvicorn · Pydantic v2 · SQLAlchemy 2.0 + SQLite · pytest/httpx
+**Hardware** — Read-only OBD-II via python-OBD/ELM327, with a software emulator for hardware-free testing
+
+See [`TECHNICAL_DOCUMENT.md`](TECHNICAL_DOCUMENT.md) for the full architecture, API reference, and configuration guide, and [`docs/architecture/overview.md`](docs/architecture/overview.md) for the repository map.
 
 ## Repository layout
-
-See [`docs/architecture/overview.md`](docs/architecture/overview.md) for the full map.
 
 ```
 edge/        # in-vehicle backend (FastAPI) + sensor drivers (camera, OBD)
@@ -51,9 +75,10 @@ docs/        # architecture + decision records (ADRs)
 infra/       # docker, CI, monitoring
 ```
 
-## Quick start (development)
+## Quick start
 
 ### Backend
+
 ```bash
 cd edge/backend
 python -m venv .venv
@@ -65,6 +90,7 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 npm install
@@ -72,10 +98,16 @@ npm run dev
 # open the printed localhost URL
 ```
 
+Use `localhost` for camera access — it's a secure-context requirement in the browser; testing over LAN or on a phone needs HTTPS.
+
+## Learn more
+
+- [`TECHNICAL_DOCUMENT.md`](TECHNICAL_DOCUMENT.md) — full stack, module map, API reference, configuration, and known limitations
+- [`docs/architecture/overview.md`](docs/architecture/overview.md) — high-level architecture and diagrams
+- [`RESUME.md`](RESUME.md) — development state and pickup guide
+
 ## License
 
 **Proprietary — Copyright (c) 2026 Akhilesh. All rights reserved.**
 
-This is proprietary and confidential software. No permission is granted to use, copy, modify,
-distribute, or create derivative works without the prior written permission of the owner. See
-the [`LICENSE`](LICENSE) file for the full terms. For licensing inquiries, contact the owner.
+This is proprietary and confidential software. No permission is granted to use, copy, modify, distribute, or create derivative works without the prior written permission of the owner. See the [`LICENSE`](LICENSE) file for the full terms. For licensing inquiries, contact the owner.
