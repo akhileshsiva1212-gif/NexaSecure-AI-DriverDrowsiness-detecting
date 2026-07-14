@@ -62,8 +62,6 @@ Every feature supports three input modes — **live camera**, **file upload**, a
 **Backend** — FastAPI · Uvicorn · Pydantic v2 · SQLAlchemy 2.0 + SQLite · pytest/httpx
 **Hardware** — Read-only OBD-II via python-OBD/ELM327, with a software emulator for hardware-free testing
 
-See [`TECHNICAL_DOCUMENT.md`](TECHNICAL_DOCUMENT.md) for the full architecture, API reference, and configuration guide, and [`docs/architecture/overview.md`](docs/architecture/overview.md) for the repository map.
-
 ## Repository layout
 
 ```
@@ -100,11 +98,6 @@ npm run dev
 
 Use `localhost` for camera access — it's a secure-context requirement in the browser; testing over LAN or on a phone needs HTTPS.
 
-## Learn more
-
-- [`TECHNICAL_DOCUMENT.md`](TECHNICAL_DOCUMENT.md) — full stack, module map, API reference, configuration, and known limitations
-- [`docs/architecture/overview.md`](docs/architecture/overview.md) — high-level architecture and diagrams
-- [`RESUME.md`](RESUME.md) — development state and pickup guide
 
 ## License
 
